@@ -53,14 +53,22 @@ module.exports.FormateData = (data) => {
 
 module.exports.PublishCustomerEvent = async (payload) => {
   // perform operations
-  axios.post("http://localhost:8000/customer/app-events", {
-    payload,
-  });
+  try {
+    await axios.post("http://localhost:8000/customer/app-events", {
+      payload,
+    });
+  } catch (error) {
+    console.log("ERROR IN PUBLISH CUSTOMER EVENT");
+  }
 };
 
 module.exports.PublishShoppingEvent = async (payload) => {
   // perform operations
-  axios.post("http://localhost:8000/shopping/app-events", {
-    payload,
-  });
+  try {
+    await axios.post("http://localhost:8000/shopping/app-events", {
+      payload,
+    });
+  } catch (error) {
+    console.log("ERROR IN PUBLISH SHOPPING EVENT", error);
+  }
 };
