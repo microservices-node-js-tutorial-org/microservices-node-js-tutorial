@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { customer, appEvents } = require("./api");
 const HandleErrors = require("./utils/error-handler");
+const { CreateChannel } = require("./utils");
 
 module.exports = async (app) => {
   app.use(express.json({ limit: "1mb" }));
@@ -10,10 +11,12 @@ module.exports = async (app) => {
   app.use(express.static(__dirname + "/public"));
 
   // listen to events
-  appEvents(app);
+  // appEvents(app); - old way
+
+  const channel = await CreateChannel();
 
   //api
-  customer(app);
+  customer(app, channel);
 
   // error handling
   app.use(HandleErrors);

@@ -1,5 +1,5 @@
 const { ProductModel } = require("../models");
-const { APIError, BadRequestError } = require("../../utils/app-errors");
+const { APIError, STATUS_CODES } = require("../../utils/app-errors");
 
 //Dealing with data base operations
 class ProductRepository {

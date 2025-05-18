@@ -1,6 +1,6 @@
 const { OrderModel, CartModel } = require("../models");
 const { v4: uuidv4 } = require("uuid");
-const { APIError, BadRequestError } = require("../../utils/app-errors");
+const { APIError, STATUS_CODES } = require("../../utils/app-errors");
 
 //Dealing with data base operations
 class ShoppingRepository {
@@ -8,12 +8,10 @@ class ShoppingRepository {
 
   async Orders(customerId) {
     try {
-      const orders = await OrderModel.find({ customerId }).populate(
-        "items.product"
-      );
+      const orders = await OrderModel.find({ customerId });
       return orders;
     } catch (err) {
-      throw APIError(
+      throw new APIError(
         "API Error",
         STATUS_CODES.INTERNAL_ERROR,
         "Unable to Find Orders"
@@ -68,7 +66,7 @@ class ShoppingRepository {
       } else {
         return await CartModel.create({
           customerId,
-          items: [{ product: { ...item, unit: qty } }],
+          items: [{ product: { ...item }, unit: qty }],
         });
       }
     } catch (err) {
@@ -76,50 +74,11 @@ class ShoppingRepository {
     }
   }
 
-  // async AddCartItem(customerId, item, qty, isRemove) {
-  //   try {
-  //     const cart = await CartModel.findOne({ customerId });
-  //     const { _id } = item;
-
-  //     if (cart) {
-  //       let existingItemIndex = cart.items.findIndex(
-  //         (cartItem) => cartItem.product._id.toString() === _id.toString()
-  //       );
-
-  //       if (existingItemIndex !== -1) {
-  //         if (isRemove) {
-  //           // Remove the item safely
-  //           cart.items.splice(existingItemIndex, 1);
-  //         } else {
-  //           // Update the quantity
-  //           cart.items[existingItemIndex].unit = qty;
-  //         }
-  //       } else if (!isRemove) {
-  //         // Add new item if not removing
-  //         cart.items.push({ product: { ...item }, unit: qty });
-  //       }
-
-  //       const savedCart = await cart.save();
-  //       return savedCart;
-  //     } else {
-  //       // Create new cart if one doesn't exist
-  //       const newCart = await CartModel.create({
-  //         customerId,
-  //         items: [{ product: { ...item }, unit: qty }],
-  //       });
-  //       return newCart;
-  //     }
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // }
-
   async CreateNewOrder(customerId, txnId) {
     //check transaction for payment Status
 
     try {
       const cart = await CartModel.findOne({ customerId });
-
       if (cart) {
         let amount = 0;
 
@@ -145,7 +104,6 @@ class ShoppingRepository {
           cart.items = [];
 
           const orderResult = await order.save();
-
           await cart.save();
 
           return orderResult;
@@ -154,7 +112,7 @@ class ShoppingRepository {
 
       return {};
     } catch (err) {
-      throw APIError(
+      throw new APIError(
         "API Error",
         STATUS_CODES.INTERNAL_ERROR,
         "Unable to Find Category"

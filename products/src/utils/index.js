@@ -1,8 +1,8 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const axios = require("axios");
+const amqplib = require("amqplib");
 
-const { APP_SECRET } = require("../config");
+const { APP_SECRET, EXCHANGE_NAME, MESSAGE_BROKER_URL } = require("../config");
 
 //Utility functions
 module.exports.GenerateSalt = async () => {
@@ -51,24 +51,52 @@ module.exports.FormateData = (data) => {
   }
 };
 
-module.exports.PublishCustomerEvent = async (payload) => {
-  // perform operations
+// message broker
+
+// create a channel
+
+module.exports.CreateChannel = async () => {
   try {
-    await axios.post("http://localhost:8000/customer/app-events", {
-      payload,
-    });
+    // connect to the rabbitMQ server
+    const connection = await amqplib.connect(MESSAGE_BROKER_URL);
+    // create a channel inside the connection
+    const channel = await connection.createChannel();
+    // declare an exchange inside the channel
+    // EXCHANGE_NAME -> name of the exchange that is created
+    // direct -> exchange type, routes messages based on a exact match between the routing key and the binding key
+    // false -> exahcnge is not durable, won't survive a message broker restart
+    await channel.assertExchange(EXCHANGE_NAME, "direct", false);
+    return channel;
   } catch (error) {
-    console.log("ERROR IN PUBLISH CUSTOMER EVENT");
+    throw error;
   }
 };
 
-module.exports.PublishShoppingEvent = async (payload) => {
-  // perform operations
+// publish a message
+
+module.exports.PublishMessage = async (channel, binding_key, messages) => {
   try {
-    await axios.post("http://localhost:8000/shopping/app-events", {
-      payload,
-    });
+    console.log("Message has been sent: ", messages);
+    // publishes a message to the exchange
+    // publish on the exachange with name EXCHANGE_NAME and route the message using the binding_key
+    await channel.publish(EXCHANGE_NAME, binding_key, Buffer.from(messages));
   } catch (error) {
-    console.log("ERROR IN PUBLISH SHOPPING EVENT", error);
+    throw error;
   }
+};
+
+// subscribe to messages
+
+module.exports.SubscribeMessage = async (channel, binding_key) => {
+  // declare a queue with name of QUEUE_NAME
+  const appQueue = await channel.assertQueue(QUEUE_NAME);
+  // binds the  queue to the exchange using the binding key
+  channel.bindQueue(appQueue.queue, EXCHANGE_NAME, binding_key);
+  // start listening for messages on the given queue
+  channel.consume(appQueue.queue, (data) => {
+    // the callback is executed each time a message arrives
+    console.log("Received data in PRODUCT SERVICE");
+    console.log(data.content.toString());
+    channel.ack(data);
+  });
 };
