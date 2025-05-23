@@ -2,11 +2,10 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   ci_verification:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -14,15 +13,26 @@ jobs:
         node-version: [22.x]
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    - name: Test Customer Service
-      working-directory: ./customer
-      run: |
-        npm ci
-        npm test
+      - name: Test Customer Service
+        working-directory: ./customer
+        run: |
+          npm ci
+          npm test
 
+      - name: Test Product Service
+        working-directory: ./product
+        run: |
+          npm ci
+          npm test
+
+      - name: Test Customer Service
+        working-directory: ./customer
+        run: |
+          npm ci
+          npm test
