@@ -1,10 +1,6 @@
 const { CUSTOMER_BINDING_KEY, SHOPPING_BINDING_KEY } = require("../config");
 const ProductService = require("../services/product-service");
-const {
-  PublishCustomerEvent,
-  PublishShoppingEvent,
-  PublishMessage,
-} = require("../utils");
+const { PublishMessage } = require("../utils");
 const UserAuth = require("./middlewares/auth");
 
 module.exports = (app, channel) => {
