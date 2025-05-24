@@ -17,52 +17,37 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Create Products Env file
-        working-directory: ./products
-        env:
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          MONGODB_URI_BASE: ${{ secrets.MONGODB_URI_BASE }}
-          MESSAGE_BROKER_URL: ${{ secrets.MESSAGE_BROKER_URL }}
-          PORT: ${{ secrets.PORT_PRODUCTS_SERVICE }}
-        # .cat - display the contents of the .env file in the terminal
-        run: |
-          touch .env
-          echo APP_SECRET=$APP_SECRET >> .env
-          echo MONGODB_URI=${MONGODB_URI_BASE}product >> .env
-          echo MESSAGE_BROKER_URL=$MESSAGE_BROKER_URL >> .env
-          echo PORT=$PORT >> .env
-          cat .env
-          
       - name: Create Customer Env file
         working-directory: ./customer
-        env:
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          MONGODB_URI_BASE: ${{ secrets.MONGODB_URI_BASE }}
-          MESSAGE_BROKER_URL: ${{ secrets.MESSAGE_BROKER_URL }}
-          PORT: ${{ secrets.PORT_CUSTOMER_SERVICE }}
         # .cat - display the contents of the .env file in the terminal
         run: |
           touch .env
-          echo APP_SECRET=$APP_SECRET >> .env
-          echo MONGODB_URI=${MONGODB_URI_BASE}customer >> .env
-          echo MESSAGE_BROKER_URL=$MESSAGE_BROKER_URL >> .env
-          echo PORT=$PORT >> .env
+          echo APP_SECRET=${{ secrets.QA_APP_SECRET }} >> .env
+          echo MONGODB_URI=${{ secrets.QA_CUSTOMER_DB_URL }} >> .env
+          echo MESSAGE_BROKER_URL=${{ secrets.QA_MESSAGE_BROKER_URL }} >> .env
+          echo PORT=8001 >> .env
           cat .env
           
-      - name: Create Shopping Env file
-        working-directory: ./shopping
-        env:
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          MONGODB_URI_BASE: ${{ secrets.MONGODB_URI_BASE }}
-          MESSAGE_BROKER_URL: ${{ secrets.MESSAGE_BROKER_URL }}
-          PORT: ${{ secrets.PORT_SHOPPING_SERVICE }}
+      - name: Create Products Env file
+        working-directory: ./products
         # .cat - display the contents of the .env file in the terminal
         run: |
           touch .env
-          echo APP_SECRET=$APP_SECRET >> .env
-          echo MONGODB_URI=${MONGODB_URI_BASE}shopping >> .env
-          echo MESSAGE_BROKER_URL=$MESSAGE_BROKER_URL >> .env
-          echo PORT=$PORT >> .env
+          echo APP_SECRET=${{ secrets.QA_APP_SECRET }} >> .env
+          echo MONGODB_URI=${{ secrets.QA_PRODUCTS_DB_URL }} >> .env
+          echo MESSAGE_BROKER_URL=${{ secrets.QA_MESSAGE_BROKER_URL }} >> .env
+          echo PORT=8002 >> .env
+          cat .env
+            
+      - name: Create Shopping Env file
+        working-directory: ./shopping
+        # .cat - display the contents of the .env file in the terminal
+        run: |
+          touch .env
+          echo APP_SECRET=${{ secrets.QA_APP_SECRET }} >> .env
+          echo MONGODB_URI=${{ secrets.QA_SHOPPING_DB_URL }} >> .env
+          echo MESSAGE_BROKER_URL=${{ secrets.QA_MESSAGE_BROKER_URL }} >> .env
+          echo PORT=8003 >> .env
           cat .env
 
    
