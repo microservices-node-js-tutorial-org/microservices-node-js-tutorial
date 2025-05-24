@@ -74,8 +74,8 @@ jobs:
       - name: Deploy on Elastic Beanstalk QA Env
         uses: einaregilsson/beanstalk-deploy@v22
         with:
-          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_access_key_secret: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: "microservices-node-js-tutorial-cicd"
           environment_name: "Microservices-node-js-tutorial-c-env"
           version_label: "ver-${{ github.sha }}"
