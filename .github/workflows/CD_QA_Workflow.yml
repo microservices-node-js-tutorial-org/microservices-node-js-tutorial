@@ -28,7 +28,7 @@ jobs:
         run: |
           touch .env
           echo APP_SECRET=$APP_SECRET >> .env
-          echo MONGODB_URI=${MONGODB_URI_BASE}products >> .env
+          echo MONGODB_URI=${MONGODB_URI_BASE}product >> .env
           echo MESSAGE_BROKER_URL=$MESSAGE_BROKER_URL >> .env
           echo PORT=$PORT >> .env
           cat .env
